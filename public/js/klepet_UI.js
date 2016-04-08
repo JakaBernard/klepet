@@ -99,6 +99,10 @@ $(document).ready(function() {
     for (var i=0; i < uporabniki.length; i++) {
       $('#seznam-uporabnikov').append(divElementEnostavniTekst(uporabniki[i]));
     }
+   
+   $("#seznam-uporabnikov div").click(function() {
+     $('#poslji-sporocilo').val('/zasebno "' + $(this).html() + '" ').focus(); //spremenis vnosno polje za zasebno sporocilo in nanj das fokus
+   })
   });
 
   setInterval(function() {
@@ -131,3 +135,5 @@ function dodajSmeske(vhodnoBesedilo) {
   }
   return vhodnoBesedilo;
 }
+
+
