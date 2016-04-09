@@ -1,6 +1,7 @@
 function divElementEnostavniTekst(sporocilo) {
   var jeSmesko = sporocilo.indexOf('http://sandbox.lavbic.net/teaching/OIS/gradivo/') > -1;
-  if (jeSmesko) {
+  var youtubeVideo = sporocilo.indexOf('https://www.youtube.com/watch?v=') > -1;
+  if (jeSmesko || youtubeVideo) {
     sporocilo = sporocilo.replace(/\</g, '&lt;').replace(/\>/g, '&gt;').replace('&lt;img', '<img').replace('png\' /&gt;', 'png\' />');
     return $('<div style="font-weight: bold"></div>').html(sporocilo);
   } else {
@@ -14,6 +15,7 @@ function divElementHtmlTekst(sporocilo) {
 
 function procesirajVnosUporabnika(klepetApp, socket) {
   var sporocilo = $('#poslji-sporocilo').val();
+  var videoTabela = linkiIzSporocila(sporocilo);
   sporocilo = dodajSmeske(sporocilo);
   var sistemskoSporocilo;
 
@@ -21,11 +23,13 @@ function procesirajVnosUporabnika(klepetApp, socket) {
     sistemskoSporocilo = klepetApp.procesirajUkaz(sporocilo);
     if (sistemskoSporocilo) {
       $('#sporocila').append(divElementHtmlTekst(sistemskoSporocilo));
+      videiVChat(videoTabela);
     }
   } else {
     sporocilo = filtirirajVulgarneBesede(sporocilo);
     klepetApp.posljiSporocilo(trenutniKanal, sporocilo);
     $('#sporocila').append(divElementEnostavniTekst(sporocilo));
+    videiVChat(videoTabela);
     $('#sporocila').scrollTop($('#sporocila').prop('scrollHeight'));
   }
 
@@ -76,6 +80,7 @@ $(document).ready(function() {
   socket.on('sporocilo', function (sporocilo) {
     var novElement = divElementEnostavniTekst(sporocilo.besedilo);
     $('#sporocila').append(novElement);
+    videiVChat(linkiIzSporocila(sporocilo.besedilo));
   });
   
   socket.on('kanali', function(kanali) {
@@ -130,4 +135,22 @@ function dodajSmeske(vhodnoBesedilo) {
       preslikovalnaTabela[smesko] + "' />");
   }
   return vhodnoBesedilo;
+}
+
+function videiVOkvir(video) { //vrne "okvirjen video"
+  return '<iframe style="width:200px; height:150px; margin-left:20px" src="https://www.youtube.com/embed/'+video+'" allowfullscreen></iframe>';
+}
+
+function linkiIzSporocila(sporocilo) { //vrne tabelo youtube linkov v sporocilu
+  var table = sporocilo.match(/(?:(?:http|https):\/\/www\.youtube\.com\/watch\?v=)(.{11})/gi);
+  for(var i in table) {
+    table[i] = table[i].replace(/(?:(?:http|https):\/\/www\.youtube\.com\/watch\?v=)(.{11})/gi, '$1');
+  }
+  return table;
+}
+
+function videiVChat(table) {
+  for(var i in table) {
+    $('#sporocila').append(videiVOkvir(table[i]));
+  }
 }
