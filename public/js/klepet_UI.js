@@ -1,6 +1,8 @@
 function divElementEnostavniTekst(sporocilo) {
   var jeSmesko = sporocilo.indexOf('http://sandbox.lavbic.net/teaching/OIS/gradivo/') > -1;
-  if (jeSmesko) {
+
+  var youtubeVideo = sporocilo.indexOf('https://www.youtube.com/watch?v=') > -1;
+  if (jeSmesko || youtubeVideo) {
     sporocilo = sporocilo.replace(/\</g, '&lt;').replace(/\>/g, '&gt;').replace('&lt;img', '<img').replace('png\' /&gt;', 'png\' />').replace('jpg\' /&gt;', 'jpg\' />').replace('gif\' /&gt;', 'gif\' />');
     return $('<div style="font-weight: bold"></div>').html(sporocilo);
   } else{
@@ -17,19 +19,24 @@ function procesirajVnosUporabnika(klepetApp, socket) {
   var sporocilo = $('#poslji-sporocilo').val();
   var sporociloSmeski = dodajSmeske(sporocilo);
   var slikeZaPripet = povezaveVSporocilu(sporocilo);
+  var videoTabela = linkiIzSporocila(sporocilo);
   var sistemskoSporocilo;
 
   if (sporocilo.charAt(0) == '/') {
     sistemskoSporocilo = klepetApp.procesirajUkaz(sporocilo);
     if (sistemskoSporocilo) {
       $('#sporocila').append(divElementHtmlTekst(sistemskoSporocilo));
+
       slikeNaZaslon(slikeZaPripet);
+      videiVChat(videoTabela);
+
     }
   } else {
     sporocilo = filtirirajVulgarneBesede(sporociloSmeski);
     klepetApp.posljiSporocilo(trenutniKanal, sporocilo);
     $('#sporocila').append(divElementEnostavniTekst(sporociloSmeski));
     slikeNaZaslon(slikeZaPripet);
+    videiVChat(videoTabela);
     $('#sporocila').scrollTop($('#sporocila').prop('scrollHeight'));
   }
 
@@ -81,6 +88,7 @@ $(document).ready(function() {
     var novElement = divElementEnostavniTekst(sporocilo.besedilo);
     $('#sporocila').append(novElement);
     slikeNaZaslon(povezaveVSporocilu(sporocilo.besedilo));
+    videiVChat(linkiIzSporocila(sporocilo.besedilo));
   });
   
   socket.on('kanali', function(kanali) {
@@ -157,4 +165,22 @@ function slikeNaZaslon(slike) {
 
 function pretvoriSlike(povezava) {
   return $('<a href="'+povezava+'"><img style="width:200px; margin-left:20px;" src="'+povezava+'" /></a>');
+}
+
+function videiVOkvir(video) { //vrne "okvirjen video"
+  return '<iframe style="width:200px; height:150px; margin-left:20px" src="https://www.youtube.com/embed/'+video+'" allowfullscreen></iframe>';
+}
+
+function linkiIzSporocila(sporocilo) { //vrne tabelo youtube linkov v sporocilu
+  var table = sporocilo.match(/(?:(?:http|https):\/\/www\.youtube\.com\/watch\?v=)(.{11})/gi);
+  for(var i in table) {
+    table[i] = table[i].replace(/(?:(?:http|https):\/\/www\.youtube\.com\/watch\?v=)(.{11})/gi, '$1');
+  }
+  return table;
+}
+
+function videiVChat(table) {
+  for(var i in table) {
+    $('#sporocila').append(videiVOkvir(table[i]));
+  }
 }
