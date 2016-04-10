@@ -43,6 +43,23 @@ Klepet.prototype.procesirajUkaz = function(ukaz) {
         sporocilo = 'Neznan ukaz';
       }
       break;
+    case 'dregljaj':
+      besede.shift();
+      //console.log(besede);
+      //console.log(besede[0]);
+      //console.log(besede[1]);
+      var dregani = besede.join(' ');
+      //console.log(besede.length == 1);
+      //console.log(dregani);
+      //console.log(dregani == true);
+      //console.log(dregani.length);
+      if (dregani.length > 1) {
+        this.socket.emit('dregljaj', {vzdevek: dregani});
+        sporocilo = 'Dregljaj za ' + dregani;
+      } else {
+        sporocilo = 'Neznan ukaz';
+      }
+      break;
     default:
       sporocilo = 'Neznan ukaz.';
       break;

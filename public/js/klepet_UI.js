@@ -91,6 +91,16 @@ $(document).ready(function() {
     videiVChat(linkiIzSporocila(sporocilo.besedilo));
   });
   
+  socket.on('dregljaj', function (rezultat){
+    if(rezultat.dregljaj) {
+       $("#vsebina").jrumble();
+    $("#vsebina").trigger('startRumble');
+    setTimeout(function() {$("#vsebina").trigger('stopRumble')}, 1500);
+    }
+   
+    
+  });
+  
   socket.on('kanali', function(kanali) {
     $('#seznam-kanalov').empty();
 
@@ -112,6 +122,10 @@ $(document).ready(function() {
     for (var i=0; i < uporabniki.length; i++) {
       $('#seznam-uporabnikov').append(divElementEnostavniTekst(uporabniki[i]));
     }
+   
+   $("#seznam-uporabnikov div").click(function() {
+     $('#poslji-sporocilo').val('/zasebno "' + $(this).html() + '" ').focus(); //spremenis vnosno polje za zasebno sporocilo in nanj das fokus
+   })
   });
 
   setInterval(function() {
@@ -144,6 +158,7 @@ function dodajSmeske(vhodnoBesedilo) {
   }
   return vhodnoBesedilo;
 }
+<<<<<<< HEAD
 function povezaveVSporocilu(sporocilo) {
   var povezave = sporocilo.match(/(https:\/\/|http:\/\/)\S+(.gif|.png|.jpg)/gi);
   var seznamPovezav = [];
@@ -184,3 +199,7 @@ function videiVChat(table) {
     $('#sporocila').append(videiVOkvir(table[i]));
   }
 }
+=======
+
+
+>>>>>>> dregljaj
