@@ -4,6 +4,7 @@ function divElementEnostavniTekst(sporocilo) {
   var youtubeVideo = sporocilo.indexOf('https://www.youtube.com/watch?v=') > -1;
   if (jeSmesko || youtubeVideo) {
     sporocilo = sporocilo.replace(/\</g, '&lt;').replace(/\>/g, '&gt;').replace('&lt;img', '<img').replace('png\' /&gt;', 'png\' />').replace('jpg\' /&gt;', 'jpg\' />').replace('gif\' /&gt;', 'gif\' />');
+  
     return $('<div style="font-weight: bold"></div>').html(sporocilo);
   } else{
     return $('<div style="font-weight: bold;"></div>').text(sporocilo);
@@ -125,7 +126,7 @@ $(document).ready(function() {
    
    $("#seznam-uporabnikov div").click(function() {
      $('#poslji-sporocilo').val('/zasebno "' + $(this).html() + '" ').focus(); //spremenis vnosno polje za zasebno sporocilo in nanj das fokus
-   })
+   });
   });
 
   setInterval(function() {
@@ -151,14 +152,15 @@ function dodajSmeske(vhodnoBesedilo) {
     ":*": "kiss.png",
     ":(": "sad.png"
   }
-  for (var smesko in preslikovalnaTabela) {
-    vhodnoBesedilo = vhodnoBesedilo.replace(smesko,
+  
+    for (var smesko in preslikovalnaTabela) {
+      vhodnoBesedilo = vhodnoBesedilo.replace(smesko,
       "<img class=\"smesko\" src='http://sandbox.lavbic.net/teaching/OIS/gradivo/" +
       preslikovalnaTabela[smesko] + "' />");
-  }
+    }
   return vhodnoBesedilo;
 }
-<<<<<<< HEAD
+
 function povezaveVSporocilu(sporocilo) {
   var povezave = sporocilo.match(/(https:\/\/|http:\/\/)\S+(.gif|.png|.jpg)/gi);
   var seznamPovezav = [];
@@ -199,7 +201,3 @@ function videiVChat(table) {
     $('#sporocila').append(videiVOkvir(table[i]));
   }
 }
-=======
-
-
->>>>>>> dregljaj
